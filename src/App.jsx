@@ -104,15 +104,6 @@ export default function App() {
     return dsaTopics.find(t => t.id === activeSection) || null;
   }, [activeSection]);
 
-  // Import handler
-  const handleImport = useCallback(async (file) => {
-    try {
-      await importData(file);
-      window.location.reload();
-    } catch (err) {
-      console.error('Import failed:', err);
-    }
-  }, [importData]);
 
   const refreshQuote = useCallback(() => {
     setQuoteIdx(prev => (prev + 1) % quotes.length);
@@ -127,8 +118,6 @@ export default function App() {
         overallProgress={overallProgress}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onExport={exportData}
-        onImport={handleImport}
         onResume={handleResume}
         onToggleSidebar={() => setSidebarOpen(p => !p)}
         sidebarOpen={sidebarOpen}

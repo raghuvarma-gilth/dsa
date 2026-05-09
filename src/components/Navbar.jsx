@@ -8,15 +8,8 @@ export default function Navbar({
   isDark, toggleTheme, overallProgress, searchQuery, setSearchQuery,
   onExport, onImport, onResume, onToggleSidebar, sidebarOpen
 }) {
-  const [showDropdown, setShowDropdown] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const fileInputRef = useRef(null);
   const { user, logout } = useAuth();
-
-  const handleImport = (e) => {
-    const file = e.target.files[0];
-    if (file) { onImport(file); setShowDropdown(false); }
-  };
   const handleLogout = async () => {
     try { await logout(); } catch (err) { console.error('Logout failed:', err); }
   };
@@ -115,56 +108,6 @@ export default function Navbar({
         >
           <Play size={12} fill="white" /> Resume
         </motion.button>
-
-        {/* Import/Export */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => { setShowDropdown(!showDropdown); setShowUserMenu(false); }}
-            style={{
-              padding: '8px 10px', borderRadius: '10px',
-              background: showDropdown ? 'rgba(255,255,255,0.05)' : 'none',
-              border: '1px solid transparent', color: 'var(--text-secondary)', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s'
-            }}
-            id="import-export-toggle"
-            title="Import / Export"
-          >
-            <Download size={17} />
-          </button>
-          <AnimatePresence>
-            {showDropdown && (
-              <motion.div
-                initial={{ opacity: 0, y: -6, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                transition={{ duration: 0.15 }}
-                style={{ ...dropdownStyle, padding: '8px', width: '190px' }}
-              >
-                {[
-                  { label: 'Export Progress', icon: Download, action: () => { onExport(); setShowDropdown(false); }, id: 'export-btn' },
-                  { label: 'Import Progress', icon: Upload, action: () => fileInputRef.current?.click(), id: 'import-btn' },
-                ].map(({ label, icon: Icon, action, id }) => (
-                  <button
-                    key={id}
-                    id={id}
-                    onClick={action}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
-                      padding: '10px 14px', borderRadius: '10px', fontSize: '13px', fontWeight: 500,
-                      background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer',
-                      transition: 'background 0.15s'
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'none'}
-                  >
-                    <Icon size={15} style={{ color: 'var(--text-muted)' }} /> {label}
-                  </button>
-                ))}
-                <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} style={{ display: 'none' }} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
 
         {/* Theme Toggle */}
         <motion.button
