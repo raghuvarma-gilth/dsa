@@ -7,6 +7,7 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth } from '../firebase';
 
@@ -48,7 +49,9 @@ export function AuthProvider({ children }) {
 
   const logout = () => signOut(auth);
 
-  const value = { user, loading, signup, login, loginWithGoogle, logout };
+  const resetPassword = (email) => sendPasswordResetEmail(auth, email);
+
+  const value = { user, loading, signup, login, loginWithGoogle, logout, resetPassword };
 
   return (
     <AuthContext.Provider value={value}>
