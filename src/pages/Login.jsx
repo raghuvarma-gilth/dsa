@@ -24,7 +24,7 @@ export default function Login() {
     if (isReset) {
       try {
         await resetPassword(email);
-        setMsg('Password reset link sent to your email.');
+        setMsg('Password reset link sent to your email kindly check in spam.');
       } catch (err) {
         setError(err.message.replace('Firebase: ', ''));
       }
