@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Swords, ArrowRight, Zap, Shield, Trophy } from 'lucide-react';
@@ -15,9 +15,6 @@ export default function Login() {
   const { login, loginWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
   
-  const cardRef = useRef(null);
-  const shineRef = useRef(null);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -54,38 +51,7 @@ export default function Login() {
     }
   };
 
-  const handleMouseMove = (e) => {
-    if (!cardRef.current || !shineRef.current) return;
-    const card = cardRef.current;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const rotateX = ((y - centerY) / centerY) * -10; // max 10 deg
-    const rotateY = ((x - centerX) / centerX) * 10;
-    
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`;
-    shineRef.current.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.2) 0%, transparent 60%)`;
-  };
-
-  const handleMouseLeave = () => {
-    if (!cardRef.current || !shineRef.current) return;
-    cardRef.current.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)`;
-    shineRef.current.style.background = `radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 60%)`;
-  };
-
-  // Generate particles & code rain
-  const [particles] = useState(() => Array.from({ length: 25 }, () => ({
-    id: Math.random(),
-    left: `${Math.random() * 100}%`,
-    animationDuration: `${5 + Math.random() * 10}s`,
-    animationDelay: `${Math.random() * 5}s`,
-    size: `${2 + Math.random() * 4}px`
-  })));
-
+  // Generate code rain
   const [codeLines] = useState(() => Array.from({ length: 15 }, () => ({
     id: Math.random(),
     left: `${Math.random() * 100}%`,
@@ -95,7 +61,7 @@ export default function Login() {
   })));
 
   return (
-    <div className="login-3d-scene">
+    <div className="login-3d-scene" style={{ background: 'var(--bg-primary)', width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
       {/* Code Rain */}
       {codeLines.map((code) => (
         <div key={code.id} className="code-rain" style={{
@@ -107,25 +73,6 @@ export default function Login() {
         </div>
       ))}
 
-      {/* Floating 3D Shapes */}
-      <div className="geometric-shape cube" style={{ top: '15%', left: '10%', animationDuration: '25s' }} />
-      <div className="geometric-shape ring" style={{ top: '70%', left: '15%', animationDuration: '30s', animationDirection: 'reverse' }} />
-      <div className="geometric-shape cube" style={{ top: '20%', right: '15%', animationDuration: '20s', border: '2px solid var(--accent-green)' }} />
-      <div className="geometric-shape code-bracket" style={{ top: '60%', right: '10%', animationDuration: '22s' }}>{'</>'}</div>
-      <div className="geometric-shape code-bracket" style={{ top: '80%', left: '30%', animationDuration: '28s', color: 'var(--accent-purple)' }}>{'{ }'}</div>
-      <div className="geometric-shape ring" style={{ top: '10%', right: '40%', animationDuration: '35s', width: '80px', height: '80px', border: '3px solid var(--accent-pink)' }} />
-
-      {/* Particles */}
-      {particles.map((p) => (
-        <div key={p.id} className="particle" style={{
-          left: p.left,
-          width: p.size,
-          height: p.size,
-          animationDuration: p.animationDuration,
-          animationDelay: p.animationDelay
-        }} />
-      ))}
-
       <div style={{ display: 'flex', width: '100%', height: '100%', position: 'relative', zIndex: 10 }}>
         {/* Left: Branding panel (desktop) */}
         <div className="hidden lg:flex" style={{
@@ -133,10 +80,10 @@ export default function Login() {
           padding: '60px', position: 'relative', zIndex: 1
         }}>
           <motion.div
-            initial={{ opacity: 0, x: -40, rotateY: 30 }}
-            animate={{ opacity: 1, x: 0, rotateY: 0 }}
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, type: 'spring' }}
-            style={{ maxWidth: '420px', transformStyle: 'preserve-3d', perspective: '1000px' }}
+            style={{ maxWidth: '420px' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '32px' }}>
               <div style={{
@@ -144,25 +91,23 @@ export default function Login() {
                 alignItems: 'center', justifyContent: 'center',
                 background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
                 boxShadow: '0 8px 32px rgba(139,92,246,0.5)',
-                animation: 'flipRotate3d 8s linear infinite',
-                transformStyle: 'preserve-3d'
               }}>
-                <Swords size={32} color="white" style={{ transform: 'translateZ(10px)' }} />
+                <Swords size={32} color="white" />
               </div>
-              <div style={{ transform: 'translateZ(20px)' }}>
+              <div>
                 <h1 className="gradient-text" style={{ fontSize: '36px', fontWeight: 900 }}>DSA WAR</h1>
                 <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Conquer Every Pattern</p>
               </div>
             </div>
 
-            <h2 style={{ fontSize: '40px', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: '20px', transform: 'translateZ(15px)' }}>
+            <h2 style={{ fontSize: '40px', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: '20px' }}>
               Master Data Structures<br />& Algorithms
             </h2>
-            <p style={{ fontSize: '17px', color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '40px', transform: 'translateZ(10px)' }}>
+            <p style={{ fontSize: '17px', color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '40px' }}>
               Track your progress across 244+ patterns. Build streaks, set goals, and conquer every DSA concept with our premium tracking system.
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', transformStyle: 'preserve-3d' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {[
                 { icon: Zap, text: '244+ DSA patterns organized by category', color: '#f59e0b' },
                 { icon: Shield, text: 'Track progress with daily streaks & goals', color: '#10b981' },
@@ -170,27 +115,25 @@ export default function Login() {
               ].map((f, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, x: -20, translateZ: -20 }}
-                  animate={{ opacity: 1, x: 0, translateZ: 0 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 + i * 0.15, type: 'spring' }}
-                  whileHover={{ translateZ: 20, scale: 1.02 }}
+                  whileHover={{ scale: 1.02 }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '14px',
                     padding: '16px 20px', borderRadius: '16px',
                     background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
                     backdropFilter: 'blur(10px)',
-                    transformStyle: 'preserve-3d'
                   }}
                 >
                   <div style={{
                     width: '40px', height: '40px', borderRadius: '12px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: `${f.color}15`,
-                    transform: 'translateZ(10px)'
                   }}>
                     <f.icon size={20} style={{ color: f.color }} />
                   </div>
-                  <span style={{ fontSize: '15px', color: 'var(--text-secondary)', fontWeight: 500, transform: 'translateZ(5px)' }}>{f.text}</span>
+                  <span style={{ fontSize: '15px', color: 'var(--text-secondary)', fontWeight: 500 }}>{f.text}</span>
                 </motion.div>
               ))}
             </div>
@@ -200,30 +143,25 @@ export default function Login() {
         {/* Right: Login form */}
         <div style={{
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '24px', position: 'relative', zIndex: 1, perspective: '1200px'
+          padding: '24px', position: 'relative', zIndex: 1
         }}>
           <motion.div
-            initial={{ opacity: 0, y: 50, rotateX: 20 }}
-            animate={{ opacity: 1, y: 0, rotateX: 0 }}
-            transition={{ duration: 0.8, type: 'spring', delay: 0.2 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, type: 'spring', delay: 0.1 }}
             className="card-3d"
-            ref={cardRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
             style={{
               width: '100%', maxWidth: '440px', padding: '48px 40px',
+              transform: 'none', perspective: 'none', transformStyle: 'flat'
             }}
           >
-            <div className="shine-overlay" ref={shineRef} />
-            
-            <div style={{ transform: 'translateZ(30px)', transformStyle: 'preserve-3d' }}>
+            <div>
               {/* Mobile logo */}
               <div className="lg:hidden" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px', justifyContent: 'center' }}>
                 <div style={{
                   width: '48px', height: '48px', borderRadius: '14px', display: 'flex',
                   alignItems: 'center', justifyContent: 'center',
                   background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
-                  animation: 'flipRotate3d 6s linear infinite'
                 }}>
                   <Swords size={24} color="white" />
                 </div>
@@ -267,32 +205,33 @@ export default function Login() {
                 </motion.div>
               )}
 
-              <form onSubmit={handleSubmit} style={{ transformStyle: 'preserve-3d' }}>
+              <form onSubmit={handleSubmit}>
                 {/* Email */}
-                <div style={{ marginBottom: '20px', transformStyle: 'preserve-3d' }}>
+                <div style={{ marginBottom: '20px' }}>
                   <label style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Email</label>
-                  <div className="input-3d-group">
-                    <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%) translateZ(10px)', color: 'var(--text-muted)', zIndex: 2 }} />
+                  <div className="input-group" style={{ position: 'relative' }}>
+                    <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 2 }} />
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
                       required
-                      className="input-3d"
-                      id="login-email"
+                      className="input-field"
                       style={{
                         width: '100%', padding: '14px 16px 14px 46px', borderRadius: '14px',
-                        color: 'var(--text-primary)', fontSize: '15px', outline: 'none'
+                        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+                        color: 'var(--text-primary)', fontSize: '15px', outline: 'none', transition: 'all 0.2s'
                       }}
+                      onFocus={(e) => { e.target.style.borderColor = 'var(--accent-purple)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
+                      onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.background = 'rgba(255,255,255,0.03)'; }}
                     />
-                    <div className="input-glow-line" />
                   </div>
                 </div>
 
                 {/* Password */}
                 {!isReset && (
-                  <div style={{ marginBottom: '32px', transformStyle: 'preserve-3d' }}>
+                  <div style={{ marginBottom: '32px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                       <label style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Password</label>
                       <button
@@ -305,33 +244,34 @@ export default function Login() {
                         Forgot password?
                       </button>
                     </div>
-                    <div className="input-3d-group">
-                      <Lock size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%) translateZ(10px)', color: 'var(--text-muted)', zIndex: 2 }} />
+                    <div className="input-group" style={{ position: 'relative' }}>
+                      <Lock size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 2 }} />
                       <input
                         type={showPass ? 'text' : 'password'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter your password"
                         required
-                        className="input-3d"
-                        id="login-password"
+                        className="input-field"
                         style={{
                           width: '100%', padding: '14px 46px 14px 46px', borderRadius: '14px',
-                          color: 'var(--text-primary)', fontSize: '15px', outline: 'none'
+                          background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+                          color: 'var(--text-primary)', fontSize: '15px', outline: 'none', transition: 'all 0.2s'
                         }}
+                        onFocus={(e) => { e.target.style.borderColor = 'var(--accent-purple)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
+                        onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.background = 'rgba(255,255,255,0.03)'; }}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPass(!showPass)}
                         style={{
-                          position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%) translateZ(10px)',
+                          position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)',
                           background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)',
                           padding: '2px', display: 'flex', zIndex: 2
                         }}
                       >
                         {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
-                      <div className="input-glow-line" />
                     </div>
                   </div>
                 )}
@@ -340,8 +280,6 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-3d"
-                  id="login-submit"
                   style={{
                     width: '100%', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)',
                     cursor: loading ? 'wait' : 'pointer', fontSize: '16px', fontWeight: 700,
@@ -350,6 +288,8 @@ export default function Login() {
                     boxShadow: '0 8px 24px rgba(139,92,246,0.4), inset 0 2px 10px rgba(255,255,255,0.3)',
                     opacity: loading ? 0.7 : 1, transition: 'all 0.2s', marginBottom: '20px'
                   }}
+                  onMouseOver={(e) => { if(!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(139,92,246,0.5), inset 0 2px 10px rgba(255,255,255,0.4)'; } }}
+                  onMouseOut={(e) => { if(!loading) { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(139,92,246,0.4), inset 0 2px 10px rgba(255,255,255,0.3)'; } }}
                 >
                   {loading ? 'Processing...' : isReset ? 'Send Reset Link' : <>Sign In <ArrowRight size={18} /></>}
                 </button>
@@ -370,7 +310,7 @@ export default function Login() {
               </form>
 
               {!isReset && (
-                <div style={{ transformStyle: 'preserve-3d' }}>
+                <div>
                   {/* Divider */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '28px 0' }}>
                     <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1))' }} />
@@ -381,8 +321,6 @@ export default function Login() {
                   {/* Google Sign In */}
                   <button
                     onClick={handleGoogle}
-                    className="btn-3d"
-                    id="google-login"
                     style={{
                       width: '100%', padding: '14px', borderRadius: '14px',
                       background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)',
@@ -390,6 +328,8 @@ export default function Login() {
                       color: 'var(--text-primary)', display: 'flex', alignItems: 'center',
                       justifyContent: 'center', gap: '12px', transition: 'all 0.2s'
                     }}
+                    onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
