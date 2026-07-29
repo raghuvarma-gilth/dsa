@@ -21,8 +21,6 @@ export default function Login() {
     setMsg('');
     setLoading(true);
     
-    const allowedEmails = ['raghuvarama66@gmail.com', 'raghuvarma66@gmail.com'];
-    
     if (isReset) {
       try {
         await resetPassword(email);
@@ -31,11 +29,6 @@ export default function Login() {
         setError(err.message.replace('Firebase: ', ''));
       }
     } else {
-      if (!allowedEmails.includes(email.toLowerCase())) {
-        setError('account was blocked');
-        setLoading(false);
-        return;
-      }
       try {
         await login(email, password);
         navigate('/');
@@ -51,13 +44,7 @@ export default function Login() {
   const handleGoogle = async () => {
     setError('');
     try {
-      const res = await loginWithGoogle();
-      const allowedEmails = ['raghuvarama66@gmail.com', 'raghuvarma66@gmail.com'];
-      if (res.user && !allowedEmails.includes(res.user.email.toLowerCase())) {
-        await logout();
-        setError('account was blocked');
-        return;
-      }
+      await loginWithGoogle();
       navigate('/');
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
