@@ -12,7 +12,7 @@ export default function Login() {
   const [msg, setMsg] = useState('');
   const [isReset, setIsReset] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login, loginWithGoogle, resetPassword } = useAuth();
+  const { login, loginWithGoogle, resetPassword, logout } = useAuth();
   const navigate = useNavigate();
   
   const handleSubmit = async (e) => {
@@ -20,6 +20,8 @@ export default function Login() {
     setError('');
     setMsg('');
     setLoading(true);
+    
+    const allowedEmails = ['raghuvarama66@gmail.com', 'raghuvarma66@gmail.com'];
     
     if (isReset) {
       try {
@@ -29,6 +31,11 @@ export default function Login() {
         setError(err.message.replace('Firebase: ', ''));
       }
     } else {
+      if (!allowedEmails.includes(email.toLowerCase())) {
+        setError('account was blocked');
+        setLoading(false);
+        return;
+      }
       try {
         await login(email, password);
         navigate('/');
@@ -44,7 +51,13 @@ export default function Login() {
   const handleGoogle = async () => {
     setError('');
     try {
-      await loginWithGoogle();
+      const res = await loginWithGoogle();
+      const allowedEmails = ['raghuvarama66@gmail.com', 'raghuvarma66@gmail.com'];
+      if (res.user && !allowedEmails.includes(res.user.email.toLowerCase())) {
+        await logout();
+        setError('account was blocked');
+        return;
+      }
       navigate('/');
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
