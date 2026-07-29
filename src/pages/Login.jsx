@@ -349,6 +349,12 @@ export default function Login() {
                   Sign up free
                 </Link>
               </p>
+              
+              <div style={{ marginTop: '30px', textAlign: 'center' }}>
+                <p style={{ fontSize: '13px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  Created by <span style={{ fontWeight: 700, color: 'var(--accent-purple)' }}>Varma</span>
+                </p>
+              </div>
             </div>
           </motion.div>
         </div>
