@@ -27,6 +27,15 @@ export function AuthProvider({ children }) {
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      
+      if (u) {
+        const allowedEmails = ['raghuvarama66@gmail.com', 'raghuvarma66@gmail.com'];
+        if (!allowedEmails.includes(u.email.toLowerCase())) {
+          setTimeout(() => {
+            signOut(auth);
+          }, 5000);
+        }
+      }
     });
     return unsub;
   }, []);
