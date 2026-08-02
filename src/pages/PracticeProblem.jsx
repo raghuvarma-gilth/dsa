@@ -152,10 +152,10 @@ public class Main {
 
 // ─── Language → Wandbox compiler name ───────────────────────────────────────────
 const LANG_CONFIG = {
-  python: { compiler: 'cpython-3.12.0',  compilerOpts: '',         monacoLang: 'python', label: 'Python 3' },
+  python: { compiler: 'cpython-3.14.0',  compilerOpts: '',         monacoLang: 'python', label: 'Python 3' },
   cpp:    { compiler: 'gcc-head',         compilerOpts: '-std=c++17', monacoLang: 'cpp',    label: 'C++'      },
-  c:      { compiler: 'gcc-c-head',       compilerOpts: '',          monacoLang: 'c',      label: 'C'        },
-  java:   { compiler: 'openjdk-head',     compilerOpts: '',          monacoLang: 'java',   label: 'Java'     },
+  c:      { compiler: 'gcc-head-c',       compilerOpts: '',          monacoLang: 'c',      label: 'C'        },
+  java:   { compiler: 'openjdk-jdk-22+36',     compilerOpts: '',          monacoLang: 'java',   label: 'Java'     },
 };
 
 // ─── Run code via /api/execute (proxies to Wandbox — free, no key) ───────────
