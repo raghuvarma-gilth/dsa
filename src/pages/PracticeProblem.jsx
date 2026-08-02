@@ -118,7 +118,7 @@ int main() {
 `,
   java: `import java.util.*;
 
-public class Solution {
+public class Main {
 
     // Write your solution here
     public static int[] twoSum(int[] nums, int target) {
@@ -150,39 +150,41 @@ public class Solution {
 `,
 };
 
-// ─── Language → Piston runtime name ──────────────────────────────────────────
+// ─── Language → Wandbox compiler name ───────────────────────────────────────────
 const LANG_CONFIG = {
-  python: { pistonLang: 'python',  pistonVersion: '3.10.0', monacoLang: 'python',  label: 'Python 3'  },
-  cpp:    { pistonLang: 'c++',     pistonVersion: '10.2.0', monacoLang: 'cpp',     label: 'C++'       },
-  c:      { pistonLang: 'c',       pistonVersion: '10.2.0', monacoLang: 'c',       label: 'C'         },
-  java:   { pistonLang: 'java',    pistonVersion: '15.0.2', monacoLang: 'java',    label: 'Java'      },
+  python: { compiler: 'cpython-3.12.0',  compilerOpts: '',         monacoLang: 'python', label: 'Python 3' },
+  cpp:    { compiler: 'gcc-head',         compilerOpts: '-std=c++17', monacoLang: 'cpp',    label: 'C++'      },
+  c:      { compiler: 'gcc-c-head',       compilerOpts: '',          monacoLang: 'c',      label: 'C'        },
+  java:   { compiler: 'openjdk-head',     compilerOpts: '',          monacoLang: 'java',   label: 'Java'     },
 };
 
-// ─── Run one test via /api/execute (proxies to Piston) ──────────────────────
-async function runOnPiston(lang, code, stdin) {
-  const { pistonLang, pistonVersion } = LANG_CONFIG[lang];
-  const ext = { python: 'py', cpp: 'cpp', c: 'c', java: 'java' }[lang];
-  const filename = lang === 'java' ? 'Solution.java' : `main.${ext}`;
+// ─── Run code via /api/execute (proxies to Wandbox — free, no key) ───────────
+async function runCode(lang, code, stdin) {
+  const { compiler, compilerOpts } = LANG_CONFIG[lang];
 
   const res = await fetch('/api/execute', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      language: pistonLang,
-      version: pistonVersion,
-      files: [{ name: filename, content: code }],
+      compiler,
+      code,
       stdin,
+      'compiler-option-raw': compilerOpts,
     }),
   });
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`API error ${res.status}: ${text.slice(0, 200)}`);
+    throw new Error(`Execution error ${res.status}: ${text.slice(0, 300)}`);
   }
 
   const data = await res.json();
-  const stdout = (data.run?.stdout || '').trim();
-  const stderr = (data.run?.stderr || data.compile?.stderr || '').trim();
+  // Wandbox response fields
+  const stdout = (data.program_output || '').trim();
+  const stderr = (data.program_error || data.compiler_error || '').trim();
+  if (data.status && data.status !== '0' && !stdout) {
+    throw new Error(stderr || 'Runtime error — check your code');
+  }
   return { stdout, stderr };
 }
 
@@ -212,7 +214,7 @@ export default function PracticeProblem({ onBack }) {
     const testResults = [];
     for (const tc of PROBLEM.testCases) {
       try {
-        const { stdout, stderr } = await runOnPiston(lang, code, tc.input);
+        const { stdout, stderr } = await runCode(lang, code, tc.input);
         const passed = normalize(stdout) === normalize(tc.expected);
         testResults.push({ ...tc, stdout, stderr, passed });
       } catch (e) {

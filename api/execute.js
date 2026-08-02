@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Allow CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -8,18 +7,18 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const pistonRes = await fetch('https://emkc.org/api/v2/piston/execute', {
+    const wandboxRes = await fetch('https://wandbox.org/api/compile.json', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req.body),
     });
 
-    if (!pistonRes.ok) {
-      const text = await pistonRes.text();
-      return res.status(pistonRes.status).json({ error: text });
+    if (!wandboxRes.ok) {
+      const text = await wandboxRes.text();
+      return res.status(wandboxRes.status).json({ error: text });
     }
 
-    const data = await pistonRes.json();
+    const data = await wandboxRes.json();
     return res.status(200).json(data);
   } catch (err) {
     return res.status(500).json({ error: err.message });

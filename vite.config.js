@@ -10,9 +10,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/execute': {
-        target: 'https://emkc.org/api/v2/piston/execute',
+        target: 'https://wandbox.org',
         changeOrigin: true,
-        rewrite: () => '',
+        rewrite: () => '/api/compile.json',
       },
     },
   },
