@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Check, X, Clock, StickyNote, Sparkles, Trophy, ExternalLink, BookOpen, Lightbulb, AlertTriangle, Brain } from 'lucide-react';
+import { ChevronDown, Check, X, Clock, StickyNote, Sparkles, Trophy, ExternalLink, BookOpen, Lightbulb, AlertTriangle, Brain, Play } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import ProgressRing from './ProgressRing';
 
@@ -10,7 +10,7 @@ const getChildLink = (child) => typeof child === 'string' ? null : child.gfgLink
 
 export default function TopicSection({
   topic, isComplete, toggleComplete, getTimestamp,
-  getNote, setNote, filter, searchQuery
+  getNote, setNote, filter, searchQuery, openPractice
 }) {
   const [expandedSubs, setExpandedSubs] = useState({});
   const [showNotes, setShowNotes] = useState({});
@@ -278,6 +278,26 @@ export default function TopicSection({
                                 <ExternalLink size={10} />
                               </a>
                             )}
+
+                            {/* Internal Practice Arena Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const probId = childName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                                openPractice(probId);
+                              }}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: '6px',
+                                padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(16,185,129,0.2)',
+                                background: 'rgba(16,185,129,0.1)', color: '#34d399', fontSize: '11px',
+                                fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
+                              }}
+                              onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(16,185,129,0.2)'; }}
+                              onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(16,185,129,0.1)'; }}
+                            >
+                              <Play size={10} />
+                              Practice Arena
+                            </button>
 
                             {ts && complete && (
                               <span className="child-timestamp">

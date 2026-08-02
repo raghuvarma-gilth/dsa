@@ -1,154 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, ChevronLeft, CheckCircle2, XCircle, Clock,
   MemoryStick, Terminal, BookOpen, TestTube2, Loader2, RotateCcw
 } from 'lucide-react';
-
-// ─── Problem Definition ───────────────────────────────────────────────────────
-const PROBLEM = {
-  id: 'two-sum',
-  title: 'Two Sum',
-  difficulty: 'Easy',
-  difficultyColor: '#34d399',
-  tags: ['Array', 'HashMap'],
-  description: `Given an array of integers <code>nums</code> and an integer <code>target</code>, return <em>indices of the two numbers</em> such that they add up to <code>target</code>.
-
-You may assume that each input would have <strong>exactly one solution</strong>, and you may not use the same element twice.
-
-You can return the answer in any order.`,
-  examples: [
-    { input: 'nums = [2,7,11,15], target = 9', output: '[0,1]', explanation: 'nums[0] + nums[1] = 2 + 7 = 9' },
-    { input: 'nums = [3,2,4], target = 6',     output: '[1,2]', explanation: 'nums[1] + nums[2] = 2 + 4 = 6' },
-    { input: 'nums = [3,3], target = 6',        output: '[0,1]', explanation: 'nums[0] + nums[1] = 3 + 3 = 6' },
-  ],
-  constraints: [
-    '2 ≤ nums.length ≤ 10⁴',
-    '-10⁹ ≤ nums[i] ≤ 10⁹',
-    '-10⁹ ≤ target ≤ 10⁹',
-    'Only one valid answer exists.',
-  ],
-  // Each test case: { input (stdin string), expected (stdout string) }
-  testCases: [
-    { input: '4\n2 7 11 15\n9',   expected: '0 1',   label: 'Example 1' },
-    { input: '3\n3 2 4\n6',       expected: '1 2',   label: 'Example 2' },
-    { input: '2\n3 3\n6',         expected: '0 1',   label: 'Example 3' },
-    { input: '5\n1 5 3 2 4\n6',   expected: '0 1',   label: 'Hidden #4'  },
-    { input: '6\n0 4 3 0 2 5\n0', expected: '0 3',   label: 'Hidden #5'  },
-  ],
-};
-
-// ─── Starter Code Templates ───────────────────────────────────────────────────
-const STARTERS = {
-  python: `import sys
-from typing import List
-
-def two_sum(nums: List[int], target: int) -> List[int]:
-    # Write your solution here
-    seen = {}
-    for i, num in enumerate(nums):
-        complement = target - num
-        if complement in seen:
-            return [seen[complement], i]
-        seen[num] = i
-    return []
-
-# ── DO NOT MODIFY BELOW ──────────────────────────────
-if __name__ == "__main__":
-    n = int(input())
-    nums = list(map(int, input().split()))
-    target = int(input())
-    result = two_sum(nums, target)
-    print(*result)
-`,
-  cpp: `#include <bits/stdc++.h>
-using namespace std;
-
-vector<int> twoSum(vector<int>& nums, int target) {
-    // Write your solution here
-    unordered_map<int,int> seen;
-    for (int i = 0; i < (int)nums.size(); i++) {
-        int comp = target - nums[i];
-        if (seen.count(comp)) return {seen[comp], i};
-        seen[nums[i]] = i;
-    }
-    return {};
-}
-
-// ── DO NOT MODIFY BELOW ──────────────────────────────
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    int n; cin >> n;
-    vector<int> nums(n);
-    for (int& x : nums) cin >> x;
-    int target; cin >> target;
-    auto res = twoSum(nums, target);
-    for (int i = 0; i < (int)res.size(); i++) {
-        if (i) cout << ' ';
-        cout << res[i];
-    }
-    cout << '\\n';
-}
-`,
-  c: `#include <stdio.h>
-#include <stdlib.h>
-
-// Write your solution here
-void twoSum(int* nums, int n, int target, int* out) {
-    for (int i = 0; i < n; i++)
-        for (int j = i+1; j < n; j++)
-            if (nums[i] + nums[j] == target) {
-                out[0] = i; out[1] = j; return;
-            }
-}
-
-// ── DO NOT MODIFY BELOW ──────────────────────────────
-int main() {
-    int n; scanf("%d", &n);
-    int* nums = malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++) scanf("%d", &nums[i]);
-    int target; scanf("%d", &target);
-    int out[2];
-    twoSum(nums, n, target, out);
-    printf("%d %d\\n", out[0], out[1]);
-    free(nums);
-}
-`,
-  java: `import java.util.*;
-
-public class Main {
-
-    // Write your solution here
-    public static int[] twoSum(int[] nums, int target) {
-        Map<Integer,Integer> seen = new HashMap<>();
-        for (int i = 0; i < nums.length; i++) {
-            int comp = target - nums[i];
-            if (seen.containsKey(comp)) return new int[]{seen.get(comp), i};
-            seen.put(nums[i], i);
-        }
-        return new int[]{};
-    }
-
-    // ── DO NOT MODIFY BELOW ──────────────────────────────
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int n = sc.nextInt();
-        int[] nums = new int[n];
-        for (int i = 0; i < n; i++) nums[i] = sc.nextInt();
-        int target = sc.nextInt();
-        int[] res = twoSum(nums, target);
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < res.length; i++) {
-            if (i > 0) sb.append(' ');
-            sb.append(res[i]);
-        }
-        System.out.println(sb);
-    }
-}
-`,
-};
+import { problemsMap } from '../data/problemsMap';
 
 // ─── Language → Wandbox compiler name ───────────────────────────────────────────
 const LANG_CONFIG = {
@@ -194,16 +51,24 @@ function normalize(s) {
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export default function PracticeProblem({ onBack }) {
+export default function PracticeProblem({ problemId, onBack }) {
+  const PROBLEM = problemsMap[problemId] || problemsMap['two-sum']; // fallback for now
+  const STARTERS = PROBLEM.starters;
+
   const [lang, setLang] = useState('cpp');
   const [code, setCode] = useState(STARTERS['cpp']);
   const [running, setRunning] = useState(false);
-  const [results, setResults] = useState(null); // array of per-test results
-  const [activeTab, setActiveTab] = useState('problem'); // 'problem' | 'results'
+  const [results, setResults] = useState(null);
+  const [activeTab, setActiveTab] = useState('problem');
+
+  // Reset code when problem changes
+  useEffect(() => {
+    setCode(STARTERS[lang]);
+    setResults(null);
+  }, [problemId, lang, STARTERS]);
 
   const handleLangChange = (newLang) => {
     setLang(newLang);
-    setCode(STARTERS[newLang]);
     setResults(null);
   };
 
@@ -211,8 +76,21 @@ export default function PracticeProblem({ onBack }) {
     setRunning(true);
     setResults(null);
     setActiveTab('results');
+    
+    // 1. Gather static tests
+    const testCasesToRun = [...(PROBLEM.staticTestCases || [])];
+    
+    // 2. Generate dynamic tests
+    if (PROBLEM.generateRandomInput && PROBLEM.solve) {
+      for (let i = 1; i <= 10; i++) {
+        const input = PROBLEM.generateRandomInput();
+        const expected = PROBLEM.solve(input);
+        testCasesToRun.push({ input, expected, label: `Random Test #${i}` });
+      }
+    }
+
     const testResults = [];
-    for (const tc of PROBLEM.testCases) {
+    for (const tc of testCasesToRun) {
       try {
         const { stdout, stderr } = await runCode(lang, code, tc.input);
         const passed = normalize(stdout) === normalize(tc.expected);
@@ -223,7 +101,7 @@ export default function PracticeProblem({ onBack }) {
     }
     setResults(testResults);
     setRunning(false);
-  }, [lang, code]);
+  }, [lang, code, PROBLEM]);
 
   const allPassed = results && results.every(r => r.passed);
   const passedCount = results ? results.filter(r => r.passed).length : 0;

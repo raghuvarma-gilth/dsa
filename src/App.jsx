@@ -32,7 +32,7 @@ export default function App() {
   const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * quotes.length));
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showGoalModal, setShowGoalModal] = useState(false);
-  const [practiceOpen, setPracticeOpen] = useState(false);
+  const [activeProblemId, setActiveProblemId] = useState(null);
 
   // Scroll tracking
   useEffect(() => {
@@ -116,7 +116,7 @@ export default function App() {
 
       {/* ── PRACTICE PROBLEM OVERLAY ── */}
       <AnimatePresence>
-        {practiceOpen && (
+        {activeProblemId && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -127,7 +127,7 @@ export default function App() {
               background: 'var(--bg-primary)', overflowY: 'auto'
             }}
           >
-            <PracticeProblem onBack={() => setPracticeOpen(false)} />
+            <PracticeProblem problemId={activeProblemId} onBack={() => setActiveProblemId(null)} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -323,7 +323,7 @@ export default function App() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setPracticeOpen(true)}
+                    onClick={() => setActiveProblemId('two-sum')}
                     style={{
                       display: 'flex', alignItems: 'center', gap: '10px',
                       padding: '12px 24px', borderRadius: '12px', border: 'none',
@@ -425,6 +425,7 @@ export default function App() {
                   setNote={setNote}
                   filter={filter}
                   searchQuery={searchQuery}
+                  openPractice={(id) => setActiveProblemId(id)}
                 />
               </motion.div>
             </AnimatePresence>
