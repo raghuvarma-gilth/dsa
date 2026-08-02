@@ -7,4 +7,14 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    proxy: {
+      '/api/execute': {
+        target: 'https://emkc.org/api/v2/piston/execute',
+        changeOrigin: true,
+        rewrite: () => '',
+      },
+    },
+  },
 })
+

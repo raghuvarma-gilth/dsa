@@ -34,7 +34,7 @@ You can return the answer in any order.`,
     { input: '4\n2 7 11 15\n9',   expected: '0 1',   label: 'Example 1' },
     { input: '3\n3 2 4\n6',       expected: '1 2',   label: 'Example 2' },
     { input: '2\n3 3\n6',         expected: '0 1',   label: 'Example 3' },
-    { input: '5\n1 5 3 2 4\n6',   expected: '1 3',   label: 'Hidden #4'  },
+    { input: '5\n1 5 3 2 4\n6',   expected: '0 1',   label: 'Hidden #4'  },
     { input: '6\n0 4 3 0 2 5\n0', expected: '0 3',   label: 'Hidden #5'  },
   ],
 };
@@ -158,13 +158,13 @@ const LANG_CONFIG = {
   java:   { pistonLang: 'java',    pistonVersion: '15.0.2', monacoLang: 'java',    label: 'Java'      },
 };
 
-// ─── Run one test via Piston ──────────────────────────────────────────────────
+// ─── Run one test via /api/execute (proxies to Piston) ──────────────────────
 async function runOnPiston(lang, code, stdin) {
   const { pistonLang, pistonVersion } = LANG_CONFIG[lang];
   const ext = { python: 'py', cpp: 'cpp', c: 'c', java: 'java' }[lang];
   const filename = lang === 'java' ? 'Solution.java' : `main.${ext}`;
 
-  const res = await fetch('https://emkc.org/api/v2/piston/execute', {
+  const res = await fetch('/api/execute', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -174,6 +174,12 @@ async function runOnPiston(lang, code, stdin) {
       stdin,
     }),
   });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`API error ${res.status}: ${text.slice(0, 200)}`);
+  }
+
   const data = await res.json();
   const stdout = (data.run?.stdout || '').trim();
   const stderr = (data.run?.stderr || data.compile?.stderr || '').trim();
