@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "canvas-confetti": "^1.9.4",
     "firebase": "^12.13.0",
     "framer-motion": "^12.38.0",

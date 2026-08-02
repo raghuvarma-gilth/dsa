@@ -8,6 +8,7 @@ import StatsCards from './components/StatsCards';
 import Heatmap from './components/Heatmap';
 import QuoteCard from './components/QuoteCard';
 import TopicSection from './components/TopicSection';
+import PracticeProblem from './pages/PracticeProblem';
 import dsaTopics from './data/dsaTopics';
 import quotes from './data/quotes';
 import {
@@ -31,6 +32,7 @@ export default function App() {
   const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * quotes.length));
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showGoalModal, setShowGoalModal] = useState(false);
+  const [practiceOpen, setPracticeOpen] = useState(false);
 
   // Scroll tracking
   useEffect(() => {
@@ -111,6 +113,24 @@ export default function App() {
 
   return (
     <div className={!isDark ? 'light-mode' : ''}>
+
+      {/* ── PRACTICE PROBLEM OVERLAY ── */}
+      <AnimatePresence>
+        {practiceOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
+            transition={{ duration: 0.25 }}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 9999,
+              background: 'var(--bg-primary)', overflowY: 'auto'
+            }}
+          >
+            <PracticeProblem onBack={() => setPracticeOpen(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Navbar */}
       <Navbar
         isDark={isDark}
@@ -256,6 +276,66 @@ export default function App() {
               <div style={{ marginTop: '20px' }}>
                 <QuoteCard quote={quotes[quoteIdx]} onRefresh={refreshQuote} />
               </div>
+
+              {/* ── Practice Arena Card ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.35 }}
+                className="glow-card"
+                style={{
+                  marginTop: '20px', padding: '28px 32px',
+                  position: 'relative', overflow: 'hidden',
+                  background: 'rgba(16,185,129,0.03)',
+                  border: '1px solid rgba(16,185,129,0.15)'
+                }}
+              >
+                {/* glow orb */}
+                <div style={{
+                  position: 'absolute', top: '-40px', right: '-40px',
+                  width: '180px', height: '180px', borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(16,185,129,0.08), transparent 70%)',
+                  filter: 'blur(30px)', pointerEvents: 'none'
+                }} />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', position: 'relative' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{
+                      width: '52px', height: '52px', borderRadius: '16px', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px',
+                      background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)'
+                    }}>💻</div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+                          Practice Arena
+                        </h3>
+                        <span style={{
+                          fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px',
+                          background: 'rgba(16,185,129,0.1)', color: '#34d399',
+                          border: '1px solid rgba(16,185,129,0.2)', letterSpacing: '0.5px'
+                        }}>BETA</span>
+                      </div>
+                      <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                        Solve problems with a built-in code editor. Supports C, C++, Java &amp; Python — runs real test cases.
+                      </p>
+                    </div>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setPracticeOpen(true)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '10px',
+                      padding: '12px 24px', borderRadius: '12px', border: 'none',
+                      background: 'linear-gradient(135deg, #10b981, #06b6d4)',
+                      color: 'white', fontSize: '14px', fontWeight: 700, cursor: 'pointer',
+                      boxShadow: '0 4px 20px rgba(16,185,129,0.35)', flexShrink: 0
+                    }}
+                  >
+                    ▶ Try Two Sum
+                  </motion.button>
+                </div>
+              </motion.div>
 
               {/* Prompt to select a topic */}
               <motion.div
