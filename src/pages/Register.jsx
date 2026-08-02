@@ -17,13 +17,35 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('Database is not working so new accounts are unable to create sorry for the inconvience our team will rectify the issue');
-    return;
+    setError('');
+    if (password !== confirmPass) {
+      setError('Passwords do not match.');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
+    setLoading(true);
+    try {
+      await signup(email, password, name);
+      navigate('/');
+    } catch (err) {
+      setError(err.code === 'auth/email-already-in-use'
+        ? 'An account with this email already exists.'
+        : err.message.replace('Firebase: ', ''));
+    }
+    setLoading(false);
   };
 
   const handleGoogle = async () => {
-    setError('Database is not working so new accounts are unable to create sorry for the inconvience our team will rectify the issue');
-    return;
+    setError('');
+    try {
+      await loginWithGoogle();
+      navigate('/');
+    } catch (err) {
+      setError(err.message.replace('Firebase: ', ''));
+    }
   };
 
   return (

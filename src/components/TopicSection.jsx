@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Check, X, Clock, StickyNote, Sparkles, Trophy, ExternalLink } from 'lucide-react';
+import { ChevronDown, Check, X, Clock, StickyNote, Sparkles, Trophy, ExternalLink, BookOpen, Lightbulb, AlertTriangle, Brain } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import ProgressRing from './ProgressRing';
 
@@ -14,6 +14,7 @@ export default function TopicSection({
 }) {
   const [expandedSubs, setExpandedSubs] = useState({});
   const [showNotes, setShowNotes] = useState({});
+  const [showPatternGuide, setShowPatternGuide] = useState({});
   const prevCompleteRef = useRef(false);
   const sectionRef = useRef(null);
 
@@ -50,6 +51,10 @@ export default function TopicSection({
 
   const toggleNoteVisibility = (subId) => {
     setShowNotes(prev => ({ ...prev, [subId]: !prev[subId] }));
+  };
+
+  const togglePatternGuide = (subId) => {
+    setShowPatternGuide(prev => ({ ...prev, [subId]: !prev[subId] }));
   };
 
   const filteredSubtopics = topic.subtopics.map(sub => {
@@ -197,6 +202,23 @@ export default function TopicSection({
                 >
                   <StickyNote size={13} />
                 </button>
+                {sub.patternGuide && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); togglePatternGuide(sub.id); }}
+                    style={{
+                      padding: '5px 8px', borderRadius: '8px',
+                      background: showPatternGuide[sub.id] ? 'rgba(16,185,129,0.1)' : 'none',
+                      border: showPatternGuide[sub.id] ? '1px solid rgba(16,185,129,0.25)' : '1px solid transparent',
+                      cursor: 'pointer', color: showPatternGuide[sub.id] ? '#34d399' : 'var(--text-muted)',
+                      flexShrink: 0, marginLeft: '4px', display: 'flex', alignItems: 'center', gap: '4px',
+                      transition: 'all 0.2s', fontSize: '10px', fontWeight: 600
+                    }}
+                    title="Pattern Recognition Guide"
+                  >
+                    <BookOpen size={12} />
+                    <span style={{ display: 'none' }}>Pattern</span>
+                  </button>
+                )}
               </div>
 
               <AnimatePresence>
@@ -305,6 +327,149 @@ export default function TopicSection({
                               id={`notes-${topic.id}-${sub.id}`}
                               style={{ marginTop: '12px' }}
                             />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* ===== PATTERN GUIDE PANEL ===== */}
+                      <AnimatePresence>
+                        {sub.patternGuide && showPatternGuide[sub.id] && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            style={{ overflow: 'hidden' }}
+                          >
+                            <div style={{
+                              marginTop: '14px', borderRadius: '12px', overflow: 'hidden',
+                              border: '1px solid rgba(16,185,129,0.15)',
+                              background: 'rgba(16,185,129,0.03)'
+                            }}>
+                              {/* Header bar */}
+                              <div style={{
+                                padding: '10px 16px', borderBottom: '1px solid rgba(16,185,129,0.1)',
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                background: 'rgba(16,185,129,0.06)'
+                              }}>
+                                <BookOpen size={14} style={{ color: '#34d399' }} />
+                                <span style={{ fontSize: '12px', fontWeight: 700, color: '#34d399', letterSpacing: '0.5px' }}>
+                                  PATTERN RECOGNITION GUIDE
+                                </span>
+                                {sub.patternGuide.complexity && (
+                                  <span style={{
+                                    marginLeft: 'auto', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace",
+                                    color: 'var(--text-muted)', background: 'rgba(255,255,255,0.04)',
+                                    padding: '2px 8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)'
+                                  }}>
+                                    ⏱ {sub.patternGuide.complexity.time} &nbsp;|&nbsp; 💾 {sub.patternGuide.complexity.space}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+
+                                {/* Brain Says */}
+                                {sub.patternGuide.brainSays && (
+                                  <div style={{
+                                    padding: '10px 14px', borderRadius: '10px',
+                                    background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.15)',
+                                    display: 'flex', gap: '10px', alignItems: 'flex-start'
+                                  }}>
+                                    <Brain size={14} style={{ color: '#a78bfa', flexShrink: 0, marginTop: '1px' }} />
+                                    <span style={{ fontSize: '12px', color: '#c4b5fd', fontStyle: 'italic', lineHeight: 1.6 }}>
+                                      {sub.patternGuide.brainSays}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {/* Two-column: Clues + Anti-Clues */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                  {/* Clues */}
+                                  <div style={{
+                                    borderRadius: '10px', padding: '10px 12px',
+                                    background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.12)'
+                                  }}>
+                                    <div style={{
+                                      display: 'flex', alignItems: 'center', gap: '6px',
+                                      marginBottom: '8px'
+                                    }}>
+                                      <Lightbulb size={12} style={{ color: '#34d399' }} />
+                                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#34d399', letterSpacing: '0.5px' }}>USE WHEN YOU SEE</span>
+                                    </div>
+                                    <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                      {sub.patternGuide.clues.map((clue, i) => (
+                                        <li key={i} style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                                          <span style={{ color: '#34d399', fontSize: '10px', marginTop: '2px', flexShrink: 0 }}>✓</span>
+                                          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>{clue}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+
+                                  {/* Anti-Clues */}
+                                  {sub.patternGuide.antiClues && (
+                                    <div style={{
+                                      borderRadius: '10px', padding: '10px 12px',
+                                      background: 'rgba(244,63,94,0.06)', border: '1px solid rgba(244,63,94,0.12)'
+                                    }}>
+                                      <div style={{
+                                        display: 'flex', alignItems: 'center', gap: '6px',
+                                        marginBottom: '8px'
+                                      }}>
+                                        <AlertTriangle size={12} style={{ color: '#fb7185' }} />
+                                        <span style={{ fontSize: '11px', fontWeight: 700, color: '#fb7185', letterSpacing: '0.5px' }}>DON'T USE WHEN</span>
+                                      </div>
+                                      <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                        {sub.patternGuide.antiClues.map((clue, i) => (
+                                          <li key={i} style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                                            <span style={{ color: '#fb7185', fontSize: '10px', marginTop: '2px', flexShrink: 0 }}>✗</span>
+                                            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>{clue}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Identification Examples */}
+                                {sub.patternGuide.examples && sub.patternGuide.examples.length > 0 && (
+                                  <div>
+                                    <div style={{
+                                      display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px'
+                                    }}>
+                                      <Sparkles size={12} style={{ color: '#f59e0b' }} />
+                                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#fbbf24', letterSpacing: '0.5px' }}>IDENTIFICATION EXAMPLES</span>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                      {sub.patternGuide.examples.map((ex, i) => (
+                                        <div key={i} style={{
+                                          borderRadius: '10px', padding: '10px 12px',
+                                          background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.12)'
+                                        }}>
+                                          <div style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.9)', marginBottom: '6px' }}>
+                                            {i + 1}. {ex.problem}
+                                          </div>
+                                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>
+                                              <span style={{ color: '#34d399', fontWeight: 600 }}>🔑 Clue: </span>{ex.clue}
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>
+                                              <span style={{ color: '#60a5fa', fontWeight: 600 }}>💡 Why: </span>{ex.why}
+                                            </div>
+                                            {ex.trap && (
+                                              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>
+                                                <span style={{ color: '#fb7185', fontWeight: 600 }}>⚠ Trap: </span>{ex.trap}
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </motion.div>
                         )}
                       </AnimatePresence>

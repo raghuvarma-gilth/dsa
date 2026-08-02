@@ -13,6 +13,51 @@ const dsaTopics = [
     subtopics: [
       {
         id: 'two-pointer', title: 'Two Pointer', difficulty: 'easy',
+        patternGuide: {
+          complexity: { time: 'O(n) or O(n log n)', space: 'O(1)' },
+          clues: [
+            'Array is SORTED (or can be sorted first)',
+            'Find a pair / triplet / quadruplet with target sum',
+            'Remove duplicates / move elements in-place',
+            'Compare characters from both ends (palindrome)',
+            'Merge two sorted arrays',
+            'Partition array around a pivot',
+            'Container with most water (maximize area between two walls)',
+          ],
+          antiClues: [
+            'Array is unsorted and sorting isn\'t allowed → use HashMap',
+            'Need indices of original positions after sort → be careful',
+            'Contiguous subarray constraint → use Sliding Window instead',
+            'Count ways or minimum cost → use Dynamic Programming',
+          ],
+          examples: [
+            {
+              problem: 'Two Sum in sorted array — find two numbers that add to target',
+              clue: '\'sorted\' + \'pair\' + \'target sum\'',
+              why: 'Left pointer starts at 0, right at end. If sum > target → right--; if sum < target → left++.',
+              trap: 'Two Sum I (unsorted, return indices) → use HashMap, not Two Pointers',
+            },
+            {
+              problem: '3Sum — find all unique triplets summing to zero',
+              clue: '\'triplet\' + \'unique\' → sort first, fix one element, Two Pointers for rest',
+              why: 'Loop i, then two pointers [i+1, n-1] for each fixed i. Skip duplicates.',
+              trap: 'Don\'t use HashMap — duplicates are hard to handle; sort + TP is cleaner',
+            },
+            {
+              problem: 'Container With Most Water',
+              clue: '\'maximize area between two walls\' → squeeze from both ends',
+              why: 'Always move the shorter wall inward — greedy insight works here.',
+              trap: 'Not Monotonic Stack — we need max area, not next greater element',
+            },
+            {
+              problem: 'Valid Palindrome — compare from both ends',
+              clue: '\'compare chars from both ends\' = left pointer from start, right from end',
+              why: 'Skip non-alphanumeric with pointer advancement, compare chars.',
+              trap: 'Not Sliding Window — no window size or constraint; just comparison',
+            },
+          ],
+          brainSays: 'One pointer at start, one at end. They walk toward each other (or same direction). Sorted array is key.',
+        },
         children: [
           { name: 'Opposite ends (left + right)', gfgLink: 'https://www.geeksforgeeks.org/problems/opposite-ends-left-right/1' },
           { name: 'Same direction (fast & slow)', gfgLink: 'https://www.geeksforgeeks.org/problems/same-direction-fast-slow/1' },
@@ -26,6 +71,43 @@ const dsaTopics = [
       },
       {
         id: 'prefix-based', title: 'Prefix Based', difficulty: 'easy',
+        patternGuide: {
+          complexity: { time: 'O(n) build, O(1) query', space: 'O(n)' },
+          clues: [
+            'Sum from index L to R — range queries',
+            'Multiple queries on the same static array',
+            'Subarray sum equals K (prefix + HashMap)',
+            '2D matrix region sum queries',
+            'Prefix XOR for range XOR queries',
+            'Count subarrays with a property (frequency map of prefix)',
+          ],
+          antiClues: [
+            'Only one query → just loop, no prefix needed',
+            'Window size is bounded dynamically → Sliding Window',
+            'Array changes after each query → use Segment Tree / BIT instead',
+          ],
+          examples: [
+            {
+              problem: 'Range sum query — many Q queries on same array',
+              clue: '\'many queries\' + \'static array\' → Prefix Sum array',
+              why: 'Build prefix once in O(n). Each query = prefix[R] - prefix[L-1] in O(1).',
+              trap: 'Not Sliding Window — no moving window; independent L..R queries',
+            },
+            {
+              problem: 'Number of subarrays whose sum equals K',
+              clue: '\'count subarrays\' + \'sum = K\' → prefix[j] - prefix[i] = K',
+              why: 'Store prefix sums in HashMap. For each j, look up (prefix[j] - K). O(n) total.',
+              trap: 'Not Sliding Window — array can have negatives; window shrinking rule breaks',
+            },
+            {
+              problem: 'Continuous subarray sum divisible by K',
+              clue: '\'divisible by K\' → prefix[j] mod K == prefix[i] mod K',
+              why: 'Store (prefix % K) in HashMap. Same remainder = valid subarray.',
+              trap: 'Not Binary Search — no monotone predicate on K divisibility',
+            },
+          ],
+          brainSays: 'Precompute prefix. Range answer = prefix[R] - prefix[L-1]. For count problems, add a HashMap.',
+        },
         children: [
           { name: 'Prefix Sum', gfgLink: 'https://www.geeksforgeeks.org/problems/prefix-sum/1' },
           { name: 'Prefix XOR', gfgLink: 'https://www.geeksforgeeks.org/problems/prefix-xor/1' },
@@ -43,6 +125,50 @@ const dsaTopics = [
       },
       {
         id: 'binary-search', title: 'Binary Search', difficulty: 'medium',
+        patternGuide: {
+          complexity: { time: 'O(log n) per search', space: 'O(1)' },
+          clues: [
+            'Find minimum value such that condition holds',
+            'Find maximum value such that condition holds',
+            'Keywords: capacity, speed, days, minimum allocation',
+            'Array is sorted OR answer space is monotonic',
+            'If X works, then X+1 also works (monotone predicate)',
+            'Rotated sorted array / find peak element',
+            'Search in 2D matrix with sorted rows & columns',
+          ],
+          antiClues: [
+            'Completely unsorted, no monotonic property → linear scan',
+            'Need ALL elements matching → use linear scan',
+            'Answer space is not monotone → cannot Binary Search',
+          ],
+          examples: [
+            {
+              problem: 'Koko Eating Bananas — minimum speed to eat all in H hours',
+              clue: '\'minimum speed such that all eaten in H hours\' → Binary Search on speed [1..max(piles)]',
+              why: 'canFinish(speed) is monotone: if speed K works, K+1 also works. BS on speed.',
+              trap: 'We\'re NOT searching IN the array; we\'re searching FOR the answer value',
+            },
+            {
+              problem: 'Ship packages in D days — minimum capacity',
+              clue: '\'minimum capacity such that feasible\' → Binary Search on answer space',
+              why: 'Check: can we ship all packages with capacity=mid in D days? Greedy check inside BS.',
+              trap: 'Not DP — no overlapping subproblems on capacity values',
+            },
+            {
+              problem: 'Search in Rotated Sorted Array',
+              clue: '\'rotated\' + \'sorted\' + \'search\' = modified BS with pivot logic',
+              why: 'One half is always sorted. Check if target is in the sorted half, else search other.',
+              trap: 'Not Two Pointers — no pair/sum constraint; it\'s a search problem',
+            },
+            {
+              problem: 'Split array into K parts minimizing maximum sum',
+              clue: '\'minimize the maximum\' → Binary Search on answer (max subarray sum)',
+              why: 'Check: can we split with max-sum ≤ mid? Greedy check runs inside each BS step.',
+              trap: 'DP works too but O(n²k) vs BS+Greedy O(n log n) — BS is preferred',
+            },
+          ],
+          brainSays: 'I\'m NOT searching IN the array. I\'m searching FOR the answer. Is the predicate monotone? Then Binary Search.',
+        },
         children: [
           { name: 'On index', gfgLink: 'https://www.geeksforgeeks.org/problems/binary-search-1587115620/1' },
           { name: 'On answer', gfgLink: 'https://www.geeksforgeeks.org/problems/allocate-minimum-number-of-pages0937/1' },
@@ -127,6 +253,35 @@ const dsaTopics = [
     subtopics: [
       {
         id: 'sw-fixed', title: 'Fixed Size', difficulty: 'easy',
+        patternGuide: {
+          complexity: { time: 'O(n)', space: 'O(k)' },
+          clues: [
+            'Fixed window size K given explicitly',
+            'Subarray / substring / contiguous range',
+            'Maximum or minimum sum/average over every window of size K',
+            'Anagram / permutation match — window size = pattern length',
+          ],
+          antiClues: [
+            'Window size is dynamic/variable → use Variable Sliding Window',
+            'Many independent L..R queries → use Prefix Sum instead',
+            'Elements don\'t need to be adjacent → not window',
+          ],
+          examples: [
+            {
+              problem: 'Maximum sum subarray of size K',
+              clue: '\'fixed size K\' + \'contiguous\' = fixed-size window, slide by 1',
+              why: 'Add rightmost element, subtract leftmost element as window slides. O(n).',
+              trap: 'Not Prefix Sum — window slides, not independent L..R queries',
+            },
+            {
+              problem: 'Find all anagrams of pattern P in string S',
+              clue: '\'anagram\' = same chars different order = fixed-size window of |P|',
+              why: 'Use frequency map, compare window freq with pattern freq as window slides.',
+              trap: 'Not Trie — no prefix search; not Two Pointers — different arrays',
+            },
+          ],
+          brainSays: 'Fixed window: add right element, remove left element. One pass. O(n).',
+        },
         children: [
           { name: 'Fixed size', gfgLink: 'https://www.geeksforgeeks.org/problems/fixed-size/1' },
           { name: 'First negative in every window of size K', gfgLink: 'https://www.geeksforgeeks.org/problems/first-negative-integer-in-every-window-of-size-k3345/1' },
@@ -135,6 +290,43 @@ const dsaTopics = [
       },
       {
         id: 'sw-variable', title: 'Variable Size', difficulty: 'medium',
+        patternGuide: {
+          complexity: { time: 'O(n)', space: 'O(k) or O(1)' },
+          clues: [
+            'Longest / shortest subarray or substring with some constraint',
+            'At most K distinct elements in window',
+            'Exactly K (convert: atMost(K) - atMost(K-1))',
+            'Minimum window containing all characters of pattern',
+            'Longest repeating char after at most K replacements',
+          ],
+          antiClues: [
+            'Elements don\'t need to be adjacent → not Sliding Window',
+            'Non-contiguous subsequence → not window',
+            'Many separate L..R queries → use Prefix Sum instead',
+            'Negative numbers in array + sum constraint → use Prefix+HashMap',
+          ],
+          examples: [
+            {
+              problem: 'Longest substring with at most 2 distinct characters',
+              clue: '\'longest substring\' + \'at most K distinct\' → variable window',
+              why: 'Expand right, shrink left when distinct count > 2. Track char freq in map.',
+              trap: 'Not Two Pointers — here we need contiguous chars, not a pair',
+            },
+            {
+              problem: 'Minimum window substring containing all chars of T',
+              clue: '\'minimum window\' + \'all chars must appear\' = shrink when valid',
+              why: 'Expand right to include all chars, shrink left to minimize window size.',
+              trap: 'Not BFS — no graph/grid; it\'s a string constraint problem',
+            },
+            {
+              problem: 'Longest repeating character replacement (at most K changes)',
+              clue: '\'longest\' + \'contiguous\' + \'at most K modifications\'',
+              why: 'Key insight: windowSize - max_freq ≤ K. Shrink left when invalid.',
+              trap: 'Not Greedy — must keep window contiguous; can\'t pick chars independently',
+            },
+          ],
+          brainSays: 'This window needs to move. Expand right, shrink left when invalid. One pass through the array.',
+        },
         children: [
           { name: 'Variable size – Expand / Shrink', gfgLink: 'https://www.geeksforgeeks.org/problems/variable-size-expand-shrink/1' },
           { name: 'Longest substring without repeat', gfgLink: 'https://www.geeksforgeeks.org/problems/longest-distinct-characters-in-string5848/1' },
@@ -194,6 +386,42 @@ const dsaTopics = [
     subtopics: [
       {
         id: 'monotonic-stack', title: 'Monotonic Stack', difficulty: 'medium',
+        patternGuide: {
+          complexity: { time: 'O(n) amortized', space: 'O(n)' },
+          clues: [
+            'Next greater element / next smaller element',
+            'Previous greater / previous smaller',
+            'Span of stock prices / daily temperatures',
+            'Remove K digits to make smallest number',
+            'Sliding window maximum (use monotonic deque)',
+          ],
+          antiClues: [
+            'Need ALL greater/smaller, not just nearest → linear scan',
+            'Need K-th greatest → Heap instead',
+            'Ranges/intervals involved → Interval Merging',
+          ],
+          examples: [
+            {
+              problem: 'Daily Temperatures — days until a warmer temperature for each day',
+              clue: '\'next greater element\' = Monotonic Decreasing Stack of indices',
+              why: 'Push index. When current temp > stack top temp → pop; that day found its answer.',
+              trap: 'Not DP — no overlapping subproblems. Not brute force O(n²).',
+            },
+            {
+              problem: 'Online Stock Span — span of consecutive days with price ≤ today',
+              clue: '\'span\' = how many consecutive previous days had lower/equal price → Mono Stack',
+              why: 'Maintain stack of (price, span). When current ≥ top price, merge spans.',
+              trap: 'Not Prefix Sum — spans change dynamically per new price',
+            },
+            {
+              problem: 'Sliding Window Maximum — max in every window of size K',
+              clue: '\'max in sliding window\' = Monotonic Decreasing Deque',
+              why: 'Deque front = max. Remove from back elements ≤ current (they\'ll never be max).',
+              trap: 'Not Heap — heap gives O(n log n); deque gives O(n). Heap can\'t efficiently remove old elements.',
+            },
+          ],
+          brainSays: 'I need NEAREST greater/smaller. Pop from stack when condition breaks. That element just found its answer.',
+        },
         children: [
           { name: 'Increasing', gfgLink: 'https://www.geeksforgeeks.org/problems/increasing-stack/1' },
           { name: 'Decreasing', gfgLink: 'https://www.geeksforgeeks.org/problems/decreasing-stack/1' },
@@ -215,6 +443,33 @@ const dsaTopics = [
       },
       {
         id: 'histogram-pattern', title: 'Histogram Pattern', difficulty: 'hard',
+        patternGuide: {
+          complexity: { time: 'O(n)', space: 'O(n)' },
+          clues: [
+            'Largest rectangle in histogram',
+            'Trapping rain water between bars',
+            'Max area of rectangle in a binary matrix',
+          ],
+          antiClues: [
+            'Need K-th area → Heap instead',
+            'Pairs/sums across arrays → Two Pointers',
+          ],
+          examples: [
+            {
+              problem: 'Largest Rectangle in Histogram',
+              clue: '\'for each bar find left/right smaller boundary\' = Monotonic Increasing Stack',
+              why: 'Pop when smaller bar found → popped bar\'s width = right boundary - left boundary - 1. Area = h × width.',
+              trap: 'Not Two Pointers — boundaries aren\'t symmetric; each bar has its own left/right bounds',
+            },
+            {
+              problem: 'Trapping Rain Water',
+              clue: '\'water above bar = min(leftMax, rightMax) - height\' → Mono Stack or Two Pointers',
+              why: 'Mono Stack: pop when current > top; water trapped = (min heights) × width gap.',
+              trap: 'Brute force O(n²) works but Mono Stack gives O(n)',
+            },
+          ],
+          brainSays: 'For each element, find the nearest smaller on both sides. That defines its boundary. Use an increasing monotonic stack.',
+        },
         children: [
           { name: 'Largest rectangle', gfgLink: 'https://www.geeksforgeeks.org/problems/maximum-rectangular-area-in-a-histogram-1587115620/1' },
           { name: 'Trapping rain water', gfgLink: 'https://www.geeksforgeeks.org/problems/trapping-rain-water-1587115621/1' },
@@ -354,6 +609,43 @@ const dsaTopics = [
     subtopics: [
       {
         id: 'exploration', title: 'Exploration', difficulty: 'medium',
+        patternGuide: {
+          complexity: { time: 'O(2ⁿ) or O(n!)', space: 'O(n) stack depth' },
+          clues: [
+            'Generate ALL combinations / permutations / subsets',
+            'Find ANY solution satisfying constraints',
+            'Keywords: generate, enumerate, all possible, N-Queens, Sudoku',
+            'Word search in a grid',
+            'Partition into groups satisfying conditions',
+            'Phone number letter combinations',
+          ],
+          antiClues: [
+            'Count ways (not list them) → DP is faster O(n²) vs O(2ⁿ)',
+            'Find optimal (min/max) → DP not Backtracking',
+            'No need to explore all options → Greedy',
+          ],
+          examples: [
+            {
+              problem: 'All subsets of a set (power set)',
+              clue: '\'all subsets\' = 2^n choices: include or exclude each element',
+              why: 'At each index: add to current subset (recurse), then remove it (backtrack).',
+              trap: 'Not DP — we need actual subsets listed, not just their count',
+            },
+            {
+              problem: 'Generate all well-formed parentheses for n pairs',
+              clue: '\'generate ALL combinations\' → recurse with open/close counts',
+              why: 'Add \'(\' if open < n, add \')\' if close < open. Base case: both = n.',
+              trap: 'Not DP — we list solutions, not count them. Not Greedy — can\'t pick one option greedily.',
+            },
+            {
+              problem: 'Combination Sum — find all combos summing to target',
+              clue: '\'find all combinations\' + \'sum to target\' = backtracking with pruning',
+              why: 'Try each candidate, recurse with remaining target, backtrack when overshot.',
+              trap: 'Not DP — we need to LIST combos; DP only counts them',
+            },
+          ],
+          brainSays: 'Try it. Go deep. Hit a dead end? UNDO and try next option. Build the solution incrementally.',
+        },
         children: [
           { name: 'Decision Tree', gfgLink: 'https://www.geeksforgeeks.org/problems/decision-tree/1' },
           { name: 'Choose – Explore – Unchoose', gfgLink: 'https://www.geeksforgeeks.org/problems/choose-explore-unchoose/1' },
@@ -369,6 +661,33 @@ const dsaTopics = [
       },
       {
         id: 'classic-bt', title: 'Classic Problems', difficulty: 'hard',
+        patternGuide: {
+          complexity: { time: 'O(n!) for permutations, O(2ⁿ) for subsets', space: 'O(n)' },
+          clues: [
+            'Place N items with pairwise constraints on a board',
+            'Fill a grid satisfying row/col/box rules',
+            'Find paths through a maze avoiding obstacles',
+          ],
+          antiClues: [
+            'Only need to COUNT solutions → DP is faster',
+            'Need SHORTEST path → BFS instead',
+          ],
+          examples: [
+            {
+              problem: 'N-Queens — place N queens, no two attack each other',
+              clue: '\'place N pieces with constraints\' = row-by-row backtracking',
+              why: 'Try each column in a row. If safe (no conflict), place queen and recurse to next row.',
+              trap: 'Not DP — no overlapping subproblems in queen placement; state space is too large',
+            },
+            {
+              problem: 'Sudoku Solver',
+              clue: '\'fill grid satisfying constraints\' = try digit 1-9 in each empty cell, backtrack on violation',
+              why: 'For each empty cell, try digits 1-9. If valid, recurse. Undo on failure.',
+              trap: 'Not Greedy — can\'t pick one digit definitively per cell without exploring future',
+            },
+          ],
+          brainSays: 'Try it. Go deep. Hit dead end? Undo and try next option.',
+        },
         children: [
           { name: 'N-Queens', gfgLink: 'https://www.geeksforgeeks.org/problems/n-queen-problem0315/1' },
           { name: 'Sudoku solver', gfgLink: 'https://www.geeksforgeeks.org/problems/solve-the-sudoku-1587115621/1' },
@@ -425,6 +744,42 @@ const dsaTopics = [
     subtopics: [
       {
         id: 'greedy-heap', title: 'Greedy Heap (Top K)', difficulty: 'medium',
+        patternGuide: {
+          complexity: { time: 'O(n log k)', space: 'O(k)' },
+          clues: [
+            'K largest / K smallest / K closest elements',
+            'Repeatedly extract minimum or maximum',
+            'Always need the NEXT BEST without sorting all',
+            'Scheduling: CPU tasks, meeting rooms',
+            'Always schedule most frequent task next',
+          ],
+          antiClues: [
+            'Need ALL elements sorted → sort() O(n log n) is simpler',
+            'Only one min/max query → single linear scan O(n)',
+            'K is very large (≈ N) → full sort may be simpler',
+          ],
+          examples: [
+            {
+              problem: 'Find K closest points to origin',
+              clue: '\'K closest\' → maintain max-heap of size K by distance',
+              why: 'Push all points. When heap size > K, pop the farthest. Heap top = farthest of K closest.',
+              trap: 'Don\'t sort all — O(n log n); max-heap of size K is O(n log k)',
+            },
+            {
+              problem: 'Find Kth Largest Element in unsorted array',
+              clue: '\'Kth largest\' → min-heap of size K. Top = Kth largest after full scan.',
+              why: 'Push element. If heap size > K, pop min. After scan, heap top = Kth largest.',
+              trap: 'Not full sort (O(n log n) vs O(n log k)). QuickSelect O(n) avg also works.',
+            },
+            {
+              problem: 'Task Scheduler — min time with n-cooldown between same tasks',
+              clue: '\'always schedule most frequent task next\' = max-heap + cooldown queue',
+              why: 'Always pick most frequent available task. Use queue for cooldown tracking.',
+              trap: 'Not Greedy alone — need heap to always find max-freq task efficiently',
+            },
+          ],
+          brainSays: 'I need the best element again and again. Don\'t sort fully. Use a heap — O(log n) per operation.',
+        },
         children: [
           { name: 'Top K / Kth Element / k closest', gfgLink: 'https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1' },
           { name: 'Task Scheduler', gfgLink: 'https://www.geeksforgeeks.org/problems/task-scheduler/1' },
@@ -446,6 +801,27 @@ const dsaTopics = [
       },
       {
         id: 'two-heaps', title: 'Two Heaps Pattern', difficulty: 'hard',
+        patternGuide: {
+          complexity: { time: 'O(log n) per insert/query', space: 'O(n)' },
+          clues: [
+            'Median of a data stream — need median after each insertion',
+            'Sliding window median — median changes as window slides',
+            'Divide elements into two balanced halves dynamically',
+          ],
+          antiClues: [
+            'Static array median → just sort once',
+            'Only one median query → sort + pick middle',
+          ],
+          examples: [
+            {
+              problem: 'Find median from a data stream',
+              clue: '\'stream\' + \'median at each step\' = max-heap (lower half) + min-heap (upper half)',
+              why: 'Max-heap top = largest of lower half. Min-heap top = smallest of upper half. Balance sizes.',
+              trap: 'Not sorted array insertion — O(n) per insert vs O(log n) with two heaps',
+            },
+          ],
+          brainSays: 'Two heaps: max-heap for lower half, min-heap for upper half. Median = top of one or average of both tops.',
+        },
         children: [
           { name: 'Find median from data stream', gfgLink: 'https://www.geeksforgeeks.org/problems/find-median-in-a-stream-1587115620/1' },
           { name: 'Sliding window median', gfgLink: 'https://www.geeksforgeeks.org/problems/sliding-window-median/1' },
@@ -463,6 +839,49 @@ const dsaTopics = [
     subtopics: [
       {
         id: 'graph-traversal', title: 'Traversal', difficulty: 'easy',
+        patternGuide: {
+          complexity: { time: 'O(V + E)', space: 'O(V)' },
+          clues: [
+            'BFS → SHORTEST path / MINIMUM steps in unweighted graph',
+            'BFS → level-order traversal, spread from multiple sources simultaneously',
+            'BFS → Word Ladder, Rotting Oranges, 01 Matrix',
+            'DFS → connected components / islands / regions',
+            'DFS → detect cycle, topological sort, all paths',
+            'DFS → tree: path sum, max depth, LCA',
+          ],
+          antiClues: [
+            'BFS on weighted graph (different costs) → Dijkstra instead',
+            'DFS when shortest path is needed → BFS instead',
+            'Groups merging dynamically → Union-Find instead',
+          ],
+          examples: [
+            {
+              problem: 'Word Ladder — min transformations from beginWord to endWord',
+              clue: '\'minimum transformations\' + \'step count\' = BFS on word graph',
+              why: 'Each word = node, differ by 1 char = edge. BFS level = transformation count.',
+              trap: 'Not DFS — DFS doesn\'t guarantee shortest. Not Dijkstra — all edges cost 1.',
+            },
+            {
+              problem: 'Rotting Oranges — minimum time for all oranges to rot',
+              clue: '\'spread simultaneously from multiple sources\' = Multi-source BFS',
+              why: 'Start BFS with ALL rotten oranges in queue. Level = time passed.',
+              trap: 'Not single-source BFS — multiple rotting oranges spread at the same time',
+            },
+            {
+              problem: 'Number of Islands — count connected land regions',
+              clue: '\'connected components\' + \'grid\' = DFS from each unvisited \'1\'',
+              why: 'Mark visited cells. Each DFS call explores one full island.',
+              trap: 'BFS works too. Not Union-Find — static grid, traverse once.',
+            },
+            {
+              problem: 'Course Schedule — detect if circular dependency exists',
+              clue: '\'directed graph\' + \'cycle detection\' = DFS with 3-color states',
+              why: 'WHITE=unvisited, GRAY=in-stack, BLACK=done. Back edge to GRAY = cycle.',
+              trap: 'Not Union-Find — directed graphs need DFS states, not DSU',
+            },
+          ],
+          brainSays: 'BFS = queue, level-by-level, shortest in unweighted graph. DFS = stack/recursion, go deep, components & cycles.',
+        },
         children: [
           { name: 'BFS', gfgLink: 'https://www.geeksforgeeks.org/problems/bfs-traversal-of-graph/1' },
           { name: 'DFS', gfgLink: 'https://www.geeksforgeeks.org/problems/depth-first-traversal-for-a-graph/1' },
@@ -511,6 +930,43 @@ const dsaTopics = [
       },
       {
         id: 'union-find', title: 'Union-Find (DSU)', difficulty: 'medium',
+        patternGuide: {
+          complexity: { time: 'O(α(n)) ≈ O(1) per operation', space: 'O(n)' },
+          clues: [
+            'Dynamic connectivity — groups merging over time',
+            'Detect cycle in UNDIRECTED graph (edges arrive one by one)',
+            'Number of connected components (especially online queries)',
+            'Kruskal\'s Minimum Spanning Tree',
+            'Are two nodes in the same group?',
+            'Accounts / emails belonging to the same person',
+          ],
+          antiClues: [
+            'Static graph, traverse once → BFS/DFS is simpler',
+            'DIRECTED graph cycle → DFS with visited states instead',
+            'Need actual path between nodes → BFS/DFS',
+          ],
+          examples: [
+            {
+              problem: 'Redundant Connection — find extra edge forming a cycle',
+              clue: '\'edges arriving one by one\' + \'detect cycle\' = Union-Find',
+              why: 'Add edges one by one. When both endpoints already in same component → cycle found.',
+              trap: 'Not DFS on final graph — we need the LAST edge that creates the cycle',
+            },
+            {
+              problem: 'Accounts Merge — same email = same person',
+              clue: '\'merge accounts sharing emails\' + \'group by identity\' = DSU',
+              why: 'Union accounts that share any email. Find all emails per root after all unions.',
+              trap: 'Not BFS/DFS alone — DSU more elegant for online merging of identity groups',
+            },
+            {
+              problem: 'Number of Provinces (friend circles)',
+              clue: '\'merge directly connected people, count groups\' = DSU',
+              why: 'Union all direct connections. Count distinct roots at end = number of provinces.',
+              trap: 'BFS/DFS works for static graph but DSU is O(α(n)) per query for dynamic additions',
+            },
+          ],
+          brainSays: 'Groups merging? Check connectivity online? Union-Find with path compression + union by rank.',
+        },
         children: [
           { name: 'Detect cycle in undirected', gfgLink: 'https://www.geeksforgeeks.org/problems/detect-cycle-using-dsu/1' },
           { name: 'Connected components', gfgLink: 'https://www.geeksforgeeks.org/problems/connected-components-in-an-undirected-graph/1' },
@@ -538,6 +994,35 @@ const dsaTopics = [
     subtopics: [
       {
         id: 'prefix-based-trie', title: 'Prefix Based', difficulty: 'medium',
+        patternGuide: {
+          complexity: { time: 'O(m) per query (m = word length)', space: 'O(n·m)' },
+          clues: [
+            'Prefix matching / autocomplete / starts-with query',
+            'Search many words efficiently in large dataset',
+            'Word search in a board (combine with DFS)',
+            'Replace words with their shortest root',
+            'Count words with given prefix',
+          ],
+          antiClues: [
+            'Only a few words, simple search → HashMap is fine',
+            'No prefix requirement → HashSet lookup is simpler',
+          ],
+          examples: [
+            {
+              problem: 'Implement Trie with insert / search / startsWith',
+              clue: '\'prefix search\' + \'multiple words\' = classic Trie — each node = one character',
+              why: 'Insert char by char. Search traverses nodes. startsWith stops at prefix end.',
+              trap: 'Not HashMap — HashMap can\'t do prefix queries efficiently',
+            },
+            {
+              problem: 'Word Search II — find all words in 2D board',
+              clue: '\'find ALL words from list in board\' → Trie + DFS on board',
+              why: 'Build Trie of word list. DFS on each cell navigating Trie simultaneously.',
+              trap: 'Not separate DFS per word — that\'s O(words × cells) which TLEs. Trie shares prefix traversal.',
+            },
+          ],
+          brainSays: 'Prefix? Multiple words? Build a Trie. O(m) per query regardless of dictionary size.',
+        },
         children: [
           { name: 'Insert / Search', gfgLink: 'https://www.geeksforgeeks.org/problems/trie-insert-and-search0651/1' },
           { name: 'Prefix Match', gfgLink: 'https://www.geeksforgeeks.org/problems/trie-insert-and-search0651/1' },
@@ -551,6 +1036,27 @@ const dsaTopics = [
       },
       {
         id: 'bitwise-trie', title: 'Bitwise Trie', difficulty: 'hard',
+        patternGuide: {
+          complexity: { time: 'O(32·n) = O(n)', space: 'O(32·n)' },
+          clues: [
+            'Find pair with maximum XOR in an array',
+            'Problems involving XOR on bit-by-bit decisions',
+            'Greedy bit-by-bit complement search',
+          ],
+          antiClues: [
+            'Simple XOR cancellation → just XOR all elements',
+            'String prefix search → use regular character Trie',
+          ],
+          examples: [
+            {
+              problem: 'Maximum XOR of two numbers in an array',
+              clue: '\'maximum XOR\' = binary Trie (0/1 per bit), greedy complement search',
+              why: 'For each number, traverse Trie greedily choosing the opposite bit to maximize XOR.',
+              trap: 'Not brute force O(n²). Trie gives O(32n) = O(n)',
+            },
+          ],
+          brainSays: 'Binary Trie: each bit is a node (0 or 1). For max XOR, greedily pick the opposite bit at each level.',
+        },
         children: [
           { name: 'Max XOR pair in array', gfgLink: 'https://www.geeksforgeeks.org/problems/maximum-xor-of-two-numbers-in-an-array/1' },
           { name: 'Compressed Trie (Patricia)', gfgLink: 'https://www.geeksforgeeks.org/problems/compressed-trie/1' }
@@ -566,6 +1072,45 @@ const dsaTopics = [
     subtopics: [
       {
         id: 'dp-core', title: 'Core', difficulty: 'medium',
+        patternGuide: {
+          complexity: { time: 'O(n²) or O(n·k)', space: 'O(n) to O(n²)' },
+          clues: [
+            'Count the number of ways to do X',
+            'Minimum / maximum cost / profit / length',
+            'Can you achieve X? (decision DP)',
+            'Choices at each step affect future steps',
+            'Recursion tree has REPEATED subproblems',
+            'Optimal substructure: optimal answer uses optimal sub-answers',
+            'Keywords: knapsack, partition, longest subsequence, edit distance',
+          ],
+          antiClues: [
+            'Only one path through data → just simulate',
+            'Greedy works (local = global) → use Greedy instead',
+            'Need to LIST all solutions → use Backtracking',
+            'No overlapping subproblems → Divide and Conquer',
+          ],
+          examples: [
+            {
+              problem: 'Coin Change — minimum coins to make amount',
+              clue: '\'minimum\' + \'unlimited use items\' + \'make target\' = unbounded knapsack DP',
+              why: 'dp[i] = min(dp[i], dp[i-coin]+1). Subproblems repeat: dp[5] uses dp[2], dp[3] etc.',
+              trap: 'Not Greedy — fails for coins [1,3,4] with target 6 → greedy picks 4,1,1=3 coins vs 3,3=2 coins',
+            },
+            {
+              problem: 'Climbing Stairs — how many ways to reach step n',
+              clue: '\'count ways\' + \'choices (1 or 2 steps) at each stair\' = 1D DP (Fibonacci pattern)',
+              why: 'dp[i] = dp[i-1] + dp[i-2]. Each step can be reached from one below or two below.',
+              trap: 'Not Backtracking — we need COUNT, not listing all paths',
+            },
+            {
+              problem: 'Minimum Path Sum in grid — move right or down only',
+              clue: '\'minimum path\' + \'grid\' + \'restricted movement\' = 2D DP grid',
+              why: 'dp[i][j] = min(dp[i-1][j], dp[i][j-1]) + grid[i][j]',
+              trap: 'Not BFS — BFS counts hops; DP accumulates weighted cost',
+            },
+          ],
+          brainSays: 'I\'m solving the same sub-problem repeatedly. Cache it in a table. Build bottom-up or memoize top-down.',
+        },
         children: [
           { name: '1D DP', gfgLink: 'https://www.geeksforgeeks.org/problems/1d-dp/1' },
           { name: '2D DP', gfgLink: 'https://www.geeksforgeeks.org/problems/2d-dp/1' },
@@ -633,6 +1178,50 @@ const dsaTopics = [
     subtopics: [
       {
         id: 'interval-greedy', title: 'Interval Greedy', difficulty: 'medium',
+        patternGuide: {
+          complexity: { time: 'O(n log n) sort + O(n)', space: 'O(1) or O(n)' },
+          clues: [
+            'Merge overlapping intervals',
+            'Insert a new interval into sorted list',
+            'Count minimum meeting rooms / platforms needed',
+            'Find employee free time',
+            'Remove minimum intervals to make rest non-overlapping',
+            'Car pooling / capacity check over a timeline',
+            'Maximum non-overlapping activities/meetings',
+          ],
+          antiClues: [
+            'Intervals are already non-overlapping → just process in order',
+            'Single interval query → simple comparison',
+            'Need count of ways to schedule → DP instead',
+          ],
+          examples: [
+            {
+              problem: 'Activity Selection — maximum non-overlapping meetings',
+              clue: '\'max non-overlapping\' + \'intervals\' → sort by END time, pick greedily',
+              why: 'Earliest finish leaves max room for future activities. This is provably optimal.',
+              trap: 'Not DP — DP works too but O(n²) vs Greedy O(n log n)',
+            },
+            {
+              problem: 'Merge Intervals — collapse overlapping ranges',
+              clue: '\'merge overlapping intervals\' → sort by start, merge if next.start ≤ current.end',
+              why: 'After sorting, only need to check adjacent intervals. Merge by extending end.',
+              trap: 'Don\'t forget to sort by START time first — merging only works on sorted input',
+            },
+            {
+              problem: 'Meeting Rooms II — minimum conference rooms needed',
+              clue: '\'minimum rooms\' + \'concurrent meetings\' = sort by start, min-heap of end times',
+              why: 'Heap top = earliest ending meeting. If new meeting starts before it ends → new room.',
+              trap: 'Not simple merge — we COUNT simultaneous overlaps, not collapse them',
+            },
+            {
+              problem: 'Minimum arrows to burst all balloons',
+              clue: '\'minimum arrows\' + \'overlapping ranges\' → sort by END, one arrow per non-overlap group',
+              why: 'Sort by right end. Arrow at balloon.end bursts all overlapping ones.',
+              trap: 'Not Interval Merge — we count arrows, not merge intervals',
+            },
+          ],
+          brainSays: 'Sort by start time first. Then decide: merge if next.start ≤ current.end, else start new group.',
+        },
         children: [
           { name: 'Activity Selection', gfgLink: 'https://www.geeksforgeeks.org/problems/activity-selection-1587115620/1' },
           { name: 'Non-overlapping Intervals', gfgLink: 'https://www.geeksforgeeks.org/problems/non-overlapping-intervals/1' },
@@ -681,6 +1270,49 @@ const dsaTopics = [
     subtopics: [
       {
         id: 'core-bits', title: 'Core', difficulty: 'medium',
+        patternGuide: {
+          complexity: { time: 'O(1) to O(n)', space: 'O(1)' },
+          clues: [
+            'Find the SINGLE non-duplicate in array of pairs (XOR)',
+            'Find MISSING number in range 1..N',
+            'Count number of 1-bits (Hamming weight)',
+            'Check / enumerate all SUBSETS of a set (bitmask)',
+            'Detect if number is power of 2',
+            'Swap without temp, toggle flags',
+            'Maximum XOR pair in array',
+          ],
+          antiClues: [
+            'Problem has nothing to do with binary structure → don\'t force bits',
+            'Need to LIST subsets → Backtracking is clearer',
+          ],
+          examples: [
+            {
+              problem: 'Single Number — one element appears once, rest appear twice',
+              clue: '\'appears twice except one\' → XOR all elements',
+              why: 'a XOR a = 0. All pairs cancel out. The single number survives.',
+              trap: 'Not HashMap — O(n) space not needed; XOR gives O(1) space, O(n) time',
+            },
+            {
+              problem: 'Missing Number in range 0..N',
+              clue: '\'missing one number in range\' → XOR 0..N with all array elements',
+              why: 'Every number appears twice except missing one. XOR leaves only missing number.',
+              trap: 'Not sorting — O(n log n) vs XOR O(n). Not sum formula — can overflow for large N.',
+            },
+            {
+              problem: 'Count Set Bits (Hamming Weight)',
+              clue: '\'count 1-bits\' = n &= (n-1) removes lowest set bit each iteration',
+              why: 'n & (n-1) clears the rightmost set bit. Count iterations until n=0.',
+              trap: 'Not string conversion — bit trick is O(set bits count), not O(32)',
+            },
+            {
+              problem: 'Power of Two check',
+              clue: '\'exactly one bit set\' → n > 0 && (n & (n-1)) == 0',
+              why: 'Power of 2 has exactly one 1-bit. n-1 flips all lower bits. AND = 0 if power of 2.',
+              trap: 'Not loop counting bits — one line bit trick suffices',
+            },
+          ],
+          brainSays: 'XOR cancels duplicates. AND/OR manipulate bits. Bit shift = multiply/divide by 2. Think in binary.',
+        },
         children: [
           { name: 'XOR Pattern', gfgLink: 'https://www.geeksforgeeks.org/problems/xor-pattern/1' },
           { name: 'Bit Masking', gfgLink: 'https://www.geeksforgeeks.org/problems/bit-masking/1' },
