@@ -7,6 +7,7 @@ import ProgressRing from './ProgressRing';
 // Helper to get child name (supports both string and object format)
 const getChildName = (child) => typeof child === 'string' ? child : child.name;
 const getChildLink = (child) => typeof child === 'string' ? null : child.gfgLink;
+const getLeetcodeLink = (child) => typeof child === 'string' ? null : child.leetcodeLink;
 
 export default function TopicSection({
   topic, isComplete, toggleComplete, getTimestamp,
