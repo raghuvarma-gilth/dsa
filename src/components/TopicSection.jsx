@@ -235,6 +235,7 @@ export default function TopicSection({
                         const ts = getTimestamp(topic.id, sub.id, ci);
                         const childName = getChildName(child);
                         const gfgLink = getChildLink(child);
+                        const leetcodeLink = getLeetcodeLink(child);
                         return (
                           <motion.div
                             key={ci}
@@ -275,6 +276,26 @@ export default function TopicSection({
                                   <text x="4" y="17" fontSize="14" fontWeight="800" fill="currentColor" fontFamily="Arial">G</text>
                                 </svg>
                                 <span>GFG</span>
+                                <ExternalLink size={10} />
+                              </a>
+                            )}
+
+                            {/* LeetCode Practice Link */}
+                            {leetcodeLink && (
+                              <a
+                                href={leetcodeLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="gfg-link-btn"
+                                style={{ background: 'rgba(234, 179, 8, 0.1)', color: '#eab308', border: '1px solid rgba(234, 179, 8, 0.2)' }}
+                                title="Practice on LeetCode"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/>
+                                  <text x="4" y="17" fontSize="14" fontWeight="800" fill="currentColor" fontFamily="Arial">L</text>
+                                </svg>
+                                <span>LeetCode</span>
                                 <ExternalLink size={10} />
                               </a>
                             )}
